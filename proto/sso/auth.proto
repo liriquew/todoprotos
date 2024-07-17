@@ -5,8 +5,8 @@ package auth;
 option go_package = "social.sso;sso";
 
 service Auth {
-    rpc Register (RegisterResponse) returns (RegisterRequest);
-    rpc Login (LoginResponse) returns (LoginRequest);
+    rpc Register (RegisterRequest) returns (RegisterResponse);
+    rpc Login (LoginRequest) returns (LoginResponse);
 }
 
 message RegisterRequest {
