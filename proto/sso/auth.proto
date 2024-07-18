@@ -7,6 +7,7 @@ option go_package = "social.sso;sso";
 service Auth {
     rpc Register (RegisterRequest) returns (RegisterResponse);
     rpc Login (LoginRequest) returns (LoginResponse);
+    rpc Authorize (AuthorizeRequest) returns (AuthorizeResponse);
 }
 
 message RegisterRequest {
@@ -19,10 +20,18 @@ message LoginRequest {
     string password = 2;
 }
 
+message AuthorizeRequest {
+    string token = 1;
+}
+
 message RegisterResponse {
     int64 uid = 1;
 }
 
 message LoginResponse {
     string token = 1;
+}
+
+message AuthorizeResponse {
+    int64 uid = 1;
 }
