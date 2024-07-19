@@ -19,7 +19,7 @@ message Note {
 }
 
 message NoteWithID {
-    Note meta = 1;
+    NoteMeta meta = 1;
     string title = 2;
     string content = 3;
 }
