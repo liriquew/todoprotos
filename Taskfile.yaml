@@ -4,6 +4,12 @@ tasks:
   generate_sso:
     aliases:
       - gen_sso
-    desc: "Generate code from proto files for sso"
+    desc: "Generate code from proto files for sso service"
     cmds:
       - protoc -I proto proto/sso/*.proto --go_out=./gen/go/ --go_opt=paths=source_relative --go-grpc_out=./gen/go/ --go-grpc_opt=paths=source_relative
+  generate_notes:
+    aliases:
+      - gen_notes
+    desc: "Generaet code from proto files for notes service"
+    cmds:
+      - protoc -I proto proto/notes/*.proto --go_out=./gen/go/ --go_opt=paths=source_relative --go-grpc_out=./gen/go/ --go-grpc_opt=paths=source_relative

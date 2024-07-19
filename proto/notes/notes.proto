@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package notes;
+
+option go_package = "social.notes;notes";
+
+
+service Notes {
+    rpc CreateNote(Note) returns (NoteMeta);
+    rpc GetNoteByID(NoteMeta) returns (Note);
+    rpc UpdateNoteByID(NoteWithID) returns (NoteMeta);
+    rpc DeleteNotebyID(NoteMeta) returns (NoteMeta);    // возможно это кринж
+}
+
+message Note {
+    int64 uid = 1;
+    string title = 2;
+    string content = 3;
+}
+
+message NoteWithID {
+    Note meta = 1;
+    string title = 2;
+    string content = 3;
+}
+
+message NoteMeta {
+    int64 UID = 1;
+    int64 noteID = 2;
+}
