@@ -22,10 +22,12 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type NotesClient interface {
-	CreateNote(ctx context.Context, in *Note, opts ...grpc.CallOption) (*NoteMeta, error)
-	GetNoteByID(ctx context.Context, in *NoteMeta, opts ...grpc.CallOption) (*Note, error)
-	UpdateNoteByID(ctx context.Context, in *NoteWithID, opts ...grpc.CallOption) (*NoteMeta, error)
-	DeleteNotebyID(ctx context.Context, in *NoteMeta, opts ...grpc.CallOption) (*NoteMeta, error)
+	CreateNote(ctx context.Context, in *CreateNoteRequest, opts ...grpc.CallOption) (*NoteResponse, error)
+	GetNote(ctx context.Context, in *NoteIDRequest, opts ...grpc.CallOption) (*Note, error)
+	UpdateNote(ctx context.Context, in *UpdateNoteRequest, opts ...grpc.CallOption) (*NoteResponse, error)
+	DeleteNote(ctx context.Context, in *NoteIDRequest, opts ...grpc.CallOption) (*NoteResponse, error)
+	ListUserNotesID(ctx context.Context, in *UserIDRequest, opts ...grpc.CallOption) (*NoteIDList, error)
+	ListUserNotes(ctx context.Context, in *NoteIDList, opts ...grpc.CallOption) (*NoteList, error)
 }
 
 type notesClient struct {
@@ -36,8 +38,8 @@ func NewNotesClient(cc grpc.ClientConnInterface) NotesClient {
 	return &notesClient{cc}
 }
 
-func (c *notesClient) CreateNote(ctx context.Context, in *Note, opts ...grpc.CallOption) (*NoteMeta, error) {
-	out := new(NoteMeta)
+func (c *notesClient) CreateNote(ctx context.Context, in *CreateNoteRequest, opts ...grpc.CallOption) (*NoteResponse, error) {
+	out := new(NoteResponse)
 	err := c.cc.Invoke(ctx, "/notes.Notes/CreateNote", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -45,27 +47,45 @@ func (c *notesClient) CreateNote(ctx context.Context, in *Note, opts ...grpc.Cal
 	return out, nil
 }
 
-func (c *notesClient) GetNoteByID(ctx context.Context, in *NoteMeta, opts ...grpc.CallOption) (*Note, error) {
+func (c *notesClient) GetNote(ctx context.Context, in *NoteIDRequest, opts ...grpc.CallOption) (*Note, error) {
 	out := new(Note)
-	err := c.cc.Invoke(ctx, "/notes.Notes/GetNoteByID", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/notes.Notes/GetNote", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *notesClient) UpdateNoteByID(ctx context.Context, in *NoteWithID, opts ...grpc.CallOption) (*NoteMeta, error) {
-	out := new(NoteMeta)
-	err := c.cc.Invoke(ctx, "/notes.Notes/UpdateNoteByID", in, out, opts...)
+func (c *notesClient) UpdateNote(ctx context.Context, in *UpdateNoteRequest, opts ...grpc.CallOption) (*NoteResponse, error) {
+	out := new(NoteResponse)
+	err := c.cc.Invoke(ctx, "/notes.Notes/UpdateNote", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *notesClient) DeleteNotebyID(ctx context.Context, in *NoteMeta, opts ...grpc.CallOption) (*NoteMeta, error) {
-	out := new(NoteMeta)
-	err := c.cc.Invoke(ctx, "/notes.Notes/DeleteNotebyID", in, out, opts...)
+func (c *notesClient) DeleteNote(ctx context.Context, in *NoteIDRequest, opts ...grpc.CallOption) (*NoteResponse, error) {
+	out := new(NoteResponse)
+	err := c.cc.Invoke(ctx, "/notes.Notes/DeleteNote", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *notesClient) ListUserNotesID(ctx context.Context, in *UserIDRequest, opts ...grpc.CallOption) (*NoteIDList, error) {
+	out := new(NoteIDList)
+	err := c.cc.Invoke(ctx, "/notes.Notes/ListUserNotesID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *notesClient) ListUserNotes(ctx context.Context, in *NoteIDList, opts ...grpc.CallOption) (*NoteList, error) {
+	out := new(NoteList)
+	err := c.cc.Invoke(ctx, "/notes.Notes/ListUserNotes", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -76,10 +96,12 @@ func (c *notesClient) DeleteNotebyID(ctx context.Context, in *NoteMeta, opts ...
 // All implementations must embed UnimplementedNotesServer
 // for forward compatibility
 type NotesServer interface {
-	CreateNote(context.Context, *Note) (*NoteMeta, error)
-	GetNoteByID(context.Context, *NoteMeta) (*Note, error)
-	UpdateNoteByID(context.Context, *NoteWithID) (*NoteMeta, error)
-	DeleteNotebyID(context.Context, *NoteMeta) (*NoteMeta, error)
+	CreateNote(context.Context, *CreateNoteRequest) (*NoteResponse, error)
+	GetNote(context.Context, *NoteIDRequest) (*Note, error)
+	UpdateNote(context.Context, *UpdateNoteRequest) (*NoteResponse, error)
+	DeleteNote(context.Context, *NoteIDRequest) (*NoteResponse, error)
+	ListUserNotesID(context.Context, *UserIDRequest) (*NoteIDList, error)
+	ListUserNotes(context.Context, *NoteIDList) (*NoteList, error)
 	mustEmbedUnimplementedNotesServer()
 }
 
@@ -87,17 +109,23 @@ type NotesServer interface {
 type UnimplementedNotesServer struct {
 }
 
-func (UnimplementedNotesServer) CreateNote(context.Context, *Note) (*NoteMeta, error) {
+func (UnimplementedNotesServer) CreateNote(context.Context, *CreateNoteRequest) (*NoteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateNote not implemented")
 }
-func (UnimplementedNotesServer) GetNoteByID(context.Context, *NoteMeta) (*Note, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetNoteByID not implemented")
+func (UnimplementedNotesServer) GetNote(context.Context, *NoteIDRequest) (*Note, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetNote not implemented")
 }
-func (UnimplementedNotesServer) UpdateNoteByID(context.Context, *NoteWithID) (*NoteMeta, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateNoteByID not implemented")
+func (UnimplementedNotesServer) UpdateNote(context.Context, *UpdateNoteRequest) (*NoteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateNote not implemented")
 }
-func (UnimplementedNotesServer) DeleteNotebyID(context.Context, *NoteMeta) (*NoteMeta, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteNotebyID not implemented")
+func (UnimplementedNotesServer) DeleteNote(context.Context, *NoteIDRequest) (*NoteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteNote not implemented")
+}
+func (UnimplementedNotesServer) ListUserNotesID(context.Context, *UserIDRequest) (*NoteIDList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListUserNotesID not implemented")
+}
+func (UnimplementedNotesServer) ListUserNotes(context.Context, *NoteIDList) (*NoteList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListUserNotes not implemented")
 }
 func (UnimplementedNotesServer) mustEmbedUnimplementedNotesServer() {}
 
@@ -113,7 +141,7 @@ func RegisterNotesServer(s grpc.ServiceRegistrar, srv NotesServer) {
 }
 
 func _Notes_CreateNote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Note)
+	in := new(CreateNoteRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -125,61 +153,97 @@ func _Notes_CreateNote_Handler(srv interface{}, ctx context.Context, dec func(in
 		FullMethod: "/notes.Notes/CreateNote",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NotesServer).CreateNote(ctx, req.(*Note))
+		return srv.(NotesServer).CreateNote(ctx, req.(*CreateNoteRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Notes_GetNoteByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NoteMeta)
+func _Notes_GetNote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NoteIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NotesServer).GetNoteByID(ctx, in)
+		return srv.(NotesServer).GetNote(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/notes.Notes/GetNoteByID",
+		FullMethod: "/notes.Notes/GetNote",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NotesServer).GetNoteByID(ctx, req.(*NoteMeta))
+		return srv.(NotesServer).GetNote(ctx, req.(*NoteIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Notes_UpdateNoteByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NoteWithID)
+func _Notes_UpdateNote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateNoteRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NotesServer).UpdateNoteByID(ctx, in)
+		return srv.(NotesServer).UpdateNote(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/notes.Notes/UpdateNoteByID",
+		FullMethod: "/notes.Notes/UpdateNote",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NotesServer).UpdateNoteByID(ctx, req.(*NoteWithID))
+		return srv.(NotesServer).UpdateNote(ctx, req.(*UpdateNoteRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Notes_DeleteNotebyID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NoteMeta)
+func _Notes_DeleteNote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NoteIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NotesServer).DeleteNotebyID(ctx, in)
+		return srv.(NotesServer).DeleteNote(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/notes.Notes/DeleteNotebyID",
+		FullMethod: "/notes.Notes/DeleteNote",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NotesServer).DeleteNotebyID(ctx, req.(*NoteMeta))
+		return srv.(NotesServer).DeleteNote(ctx, req.(*NoteIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Notes_ListUserNotesID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NotesServer).ListUserNotesID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/notes.Notes/ListUserNotesID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NotesServer).ListUserNotesID(ctx, req.(*UserIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Notes_ListUserNotes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NoteIDList)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NotesServer).ListUserNotes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/notes.Notes/ListUserNotes",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NotesServer).ListUserNotes(ctx, req.(*NoteIDList))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -196,16 +260,24 @@ var Notes_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Notes_CreateNote_Handler,
 		},
 		{
-			MethodName: "GetNoteByID",
-			Handler:    _Notes_GetNoteByID_Handler,
+			MethodName: "GetNote",
+			Handler:    _Notes_GetNote_Handler,
 		},
 		{
-			MethodName: "UpdateNoteByID",
-			Handler:    _Notes_UpdateNoteByID_Handler,
+			MethodName: "UpdateNote",
+			Handler:    _Notes_UpdateNote_Handler,
 		},
 		{
-			MethodName: "DeleteNotebyID",
-			Handler:    _Notes_DeleteNotebyID_Handler,
+			MethodName: "DeleteNote",
+			Handler:    _Notes_DeleteNote_Handler,
+		},
+		{
+			MethodName: "ListUserNotesID",
+			Handler:    _Notes_ListUserNotesID_Handler,
+		},
+		{
+			MethodName: "ListUserNotes",
+			Handler:    _Notes_ListUserNotes_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
