@@ -28,7 +28,7 @@ message NoteIDRequest {
 }
 
 message NoteResponse {
-    int64 NoteID = 1;
+    int64 NID = 1;
 }
 
 message UserIDRequest {
@@ -42,12 +42,13 @@ message CreateNoteRequest {
 
 message UpdateNoteRequest {
     int64 UID = 1;
-    int64 NoteID = 2;
+    int64 NID = 2;
     Note Note = 3;
 }
 
 message NoteIDList {
-    repeated int64 NoteIDs = 1;
+    int64 UID = 1;
+    repeated int64 NoteIDs = 2;
 }
 
 message NoteList {
