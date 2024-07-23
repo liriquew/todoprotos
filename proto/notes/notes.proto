@@ -51,6 +51,11 @@ message NoteIDList {
     repeated int64 NoteIDs = 2;
 }
 
+message NoteListItem {
+    int64 NID = 1;
+    Note Note = 2;
+}
+
 message NoteList {
-    repeated Note Notes = 1;
+    repeated NoteListItem Notes = 1;
 }
