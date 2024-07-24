@@ -5,6 +5,7 @@ package notes;
 option go_package = "social.notes;notes";
 
 import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
 
 service Notes {
     rpc CreateNote (CreateNoteRequest) returns (NoteResponse);
@@ -20,6 +21,7 @@ message Note {
     string Title = 1;
     string Content = 2;
     optional google.protobuf.Duration Duration = 3;
+    optional google.protobuf.Timestamp CreatedAt = 4; 
 }
 
 message NoteIDRequest {
