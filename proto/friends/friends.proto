@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package friends;
+
+option go_package = "social.notes;notes";
+
+service Friends {
+    rpc AddFriend (FriendRequest) returns (FriendResponse);
+    rpc RemoveFriend (FriendRequest) returns (FriendResponse);
+    rpc ListFriends (ListFriendRequest) returns (ListFriendResponse);    
+}
+
+message FriendRequest {
+    int64 UID = 1;
+    int64 FriendID = 2;
+}
+
+message FriendResponse {
+}
+
+message ListFriendRequest {
+    int64 UID = 1;
+}
+
+message ListFriendResponse {
+    repeated int64 FriendIDs = 1;
+}
