@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package friends;
 
-option go_package = "social.notes;notes";
+option go_package = "social.friends;friends";
 
 service Friends {
     rpc AddFriend (FriendRequest) returns (FriendResponse);

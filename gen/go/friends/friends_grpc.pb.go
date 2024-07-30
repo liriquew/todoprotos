@@ -4,7 +4,7 @@
 // - protoc             v5.27.2
 // source: friends/friends.proto
 
-package notes
+package friends
 
 import (
 	context "context"
