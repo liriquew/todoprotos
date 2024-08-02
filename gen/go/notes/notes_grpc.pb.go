@@ -28,6 +28,7 @@ type NotesClient interface {
 	DeleteNote(ctx context.Context, in *NoteIDRequest, opts ...grpc.CallOption) (*NoteResponse, error)
 	ListUserNotesID(ctx context.Context, in *UserIDRequest, opts ...grpc.CallOption) (*NoteIDList, error)
 	ListUserNotes(ctx context.Context, in *NoteIDList, opts ...grpc.CallOption) (*NoteList, error)
+	ListUsersNotes(ctx context.Context, in *UIDList, opts ...grpc.CallOption) (*NoteList, error)
 }
 
 type notesClient struct {
@@ -92,6 +93,15 @@ func (c *notesClient) ListUserNotes(ctx context.Context, in *NoteIDList, opts ..
 	return out, nil
 }
 
+func (c *notesClient) ListUsersNotes(ctx context.Context, in *UIDList, opts ...grpc.CallOption) (*NoteList, error) {
+	out := new(NoteList)
+	err := c.cc.Invoke(ctx, "/notes.Notes/ListUsersNotes", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // NotesServer is the server API for Notes service.
 // All implementations must embed UnimplementedNotesServer
 // for forward compatibility
@@ -102,6 +112,7 @@ type NotesServer interface {
 	DeleteNote(context.Context, *NoteIDRequest) (*NoteResponse, error)
 	ListUserNotesID(context.Context, *UserIDRequest) (*NoteIDList, error)
 	ListUserNotes(context.Context, *NoteIDList) (*NoteList, error)
+	ListUsersNotes(context.Context, *UIDList) (*NoteList, error)
 	mustEmbedUnimplementedNotesServer()
 }
 
@@ -126,6 +137,9 @@ func (UnimplementedNotesServer) ListUserNotesID(context.Context, *UserIDRequest)
 }
 func (UnimplementedNotesServer) ListUserNotes(context.Context, *NoteIDList) (*NoteList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUserNotes not implemented")
+}
+func (UnimplementedNotesServer) ListUsersNotes(context.Context, *UIDList) (*NoteList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListUsersNotes not implemented")
 }
 func (UnimplementedNotesServer) mustEmbedUnimplementedNotesServer() {}
 
@@ -248,6 +262,24 @@ func _Notes_ListUserNotes_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Notes_ListUsersNotes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UIDList)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NotesServer).ListUsersNotes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/notes.Notes/ListUsersNotes",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NotesServer).ListUsersNotes(ctx, req.(*UIDList))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Notes_ServiceDesc is the grpc.ServiceDesc for Notes service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -278,6 +310,10 @@ var Notes_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListUserNotes",
 			Handler:    _Notes_ListUserNotes_Handler,
+		},
+		{
+			MethodName: "ListUsersNotes",
+			Handler:    _Notes_ListUsersNotes_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
