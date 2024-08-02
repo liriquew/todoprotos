@@ -28,7 +28,7 @@ type NotesClient interface {
 	DeleteNote(ctx context.Context, in *NoteIDRequest, opts ...grpc.CallOption) (*NoteResponse, error)
 	ListUserNotesID(ctx context.Context, in *UserIDRequest, opts ...grpc.CallOption) (*NoteIDList, error)
 	ListUserNotes(ctx context.Context, in *NoteIDList, opts ...grpc.CallOption) (*NoteList, error)
-	ListUsersNotes(ctx context.Context, in *UsersNotesRequest, opts ...grpc.CallOption) (*NoteList, error)
+	ListUsersNotes(ctx context.Context, in *UsersNotesRequest, opts ...grpc.CallOption) (*UsersNotesList, error)
 }
 
 type notesClient struct {
@@ -93,8 +93,8 @@ func (c *notesClient) ListUserNotes(ctx context.Context, in *NoteIDList, opts ..
 	return out, nil
 }
 
-func (c *notesClient) ListUsersNotes(ctx context.Context, in *UsersNotesRequest, opts ...grpc.CallOption) (*NoteList, error) {
-	out := new(NoteList)
+func (c *notesClient) ListUsersNotes(ctx context.Context, in *UsersNotesRequest, opts ...grpc.CallOption) (*UsersNotesList, error) {
+	out := new(UsersNotesList)
 	err := c.cc.Invoke(ctx, "/notes.Notes/ListUsersNotes", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -112,7 +112,7 @@ type NotesServer interface {
 	DeleteNote(context.Context, *NoteIDRequest) (*NoteResponse, error)
 	ListUserNotesID(context.Context, *UserIDRequest) (*NoteIDList, error)
 	ListUserNotes(context.Context, *NoteIDList) (*NoteList, error)
-	ListUsersNotes(context.Context, *UsersNotesRequest) (*NoteList, error)
+	ListUsersNotes(context.Context, *UsersNotesRequest) (*UsersNotesList, error)
 	mustEmbedUnimplementedNotesServer()
 }
 
@@ -138,7 +138,7 @@ func (UnimplementedNotesServer) ListUserNotesID(context.Context, *UserIDRequest)
 func (UnimplementedNotesServer) ListUserNotes(context.Context, *NoteIDList) (*NoteList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUserNotes not implemented")
 }
-func (UnimplementedNotesServer) ListUsersNotes(context.Context, *UsersNotesRequest) (*NoteList, error) {
+func (UnimplementedNotesServer) ListUsersNotes(context.Context, *UsersNotesRequest) (*UsersNotesList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUsersNotes not implemented")
 }
 func (UnimplementedNotesServer) mustEmbedUnimplementedNotesServer() {}
