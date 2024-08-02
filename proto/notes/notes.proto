@@ -16,7 +16,7 @@ service Notes {
     rpc ListUserNotesID (UserIDRequest) returns (NoteIDList);
     rpc ListUserNotes (NoteIDList) returns (NoteList);
 
-    rpc ListUsersNotes (UIDList) returns (NoteList);
+    rpc ListUsersNotes (UsersNotesRequest) returns (NoteList);
 }
 
 message Note {
@@ -60,8 +60,10 @@ message NoteListItem {
     Note Note = 2;
 }
 
-message UIDList {
-    repeated int64 UIDs = 1;
+message UsersNotesRequest {
+    int64 Offset = 1;
+    int64 Limit = 2;
+    repeated int64 UIDs = 3;
 }
 
 message NoteList {

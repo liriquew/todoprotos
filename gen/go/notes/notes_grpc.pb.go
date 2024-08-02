@@ -28,7 +28,7 @@ type NotesClient interface {
 	DeleteNote(ctx context.Context, in *NoteIDRequest, opts ...grpc.CallOption) (*NoteResponse, error)
 	ListUserNotesID(ctx context.Context, in *UserIDRequest, opts ...grpc.CallOption) (*NoteIDList, error)
 	ListUserNotes(ctx context.Context, in *NoteIDList, opts ...grpc.CallOption) (*NoteList, error)
-	ListUsersNotes(ctx context.Context, in *UIDList, opts ...grpc.CallOption) (*NoteList, error)
+	ListUsersNotes(ctx context.Context, in *UsersNotesRequest, opts ...grpc.CallOption) (*NoteList, error)
 }
 
 type notesClient struct {
@@ -93,7 +93,7 @@ func (c *notesClient) ListUserNotes(ctx context.Context, in *NoteIDList, opts ..
 	return out, nil
 }
 
-func (c *notesClient) ListUsersNotes(ctx context.Context, in *UIDList, opts ...grpc.CallOption) (*NoteList, error) {
+func (c *notesClient) ListUsersNotes(ctx context.Context, in *UsersNotesRequest, opts ...grpc.CallOption) (*NoteList, error) {
 	out := new(NoteList)
 	err := c.cc.Invoke(ctx, "/notes.Notes/ListUsersNotes", in, out, opts...)
 	if err != nil {
@@ -112,7 +112,7 @@ type NotesServer interface {
 	DeleteNote(context.Context, *NoteIDRequest) (*NoteResponse, error)
 	ListUserNotesID(context.Context, *UserIDRequest) (*NoteIDList, error)
 	ListUserNotes(context.Context, *NoteIDList) (*NoteList, error)
-	ListUsersNotes(context.Context, *UIDList) (*NoteList, error)
+	ListUsersNotes(context.Context, *UsersNotesRequest) (*NoteList, error)
 	mustEmbedUnimplementedNotesServer()
 }
 
@@ -138,7 +138,7 @@ func (UnimplementedNotesServer) ListUserNotesID(context.Context, *UserIDRequest)
 func (UnimplementedNotesServer) ListUserNotes(context.Context, *NoteIDList) (*NoteList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUserNotes not implemented")
 }
-func (UnimplementedNotesServer) ListUsersNotes(context.Context, *UIDList) (*NoteList, error) {
+func (UnimplementedNotesServer) ListUsersNotes(context.Context, *UsersNotesRequest) (*NoteList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUsersNotes not implemented")
 }
 func (UnimplementedNotesServer) mustEmbedUnimplementedNotesServer() {}
@@ -263,7 +263,7 @@ func _Notes_ListUserNotes_Handler(srv interface{}, ctx context.Context, dec func
 }
 
 func _Notes_ListUsersNotes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UIDList)
+	in := new(UsersNotesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -275,7 +275,7 @@ func _Notes_ListUsersNotes_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/notes.Notes/ListUsersNotes",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NotesServer).ListUsersNotes(ctx, req.(*UIDList))
+		return srv.(NotesServer).ListUsersNotes(ctx, req.(*UsersNotesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
